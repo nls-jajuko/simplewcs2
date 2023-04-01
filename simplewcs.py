@@ -167,15 +167,19 @@ class SimpleWCS:
 
         baseUrl = self.dlg.leUrl.text()
 
+        apikey = self.dlg.apiKey.text()
+
         version = self.dlg.cbVersion.currentText()
 
-        params = {"REQUEST": "GetCapabilities", "SERVICE": "WCS", "Version": version}
+        params = {"REQUEST": "GetCapabilities", "SERVICE": "WCS", "Version": version,
+            "api-key": apikey}
+
         querystring = urllib.parse.urlencode(params)
         url = self.checkUrlSyntax(baseUrl)
         xmlResponse = self.requestXML(url + querystring)
 
         capabilities = xml.etree.ElementTree.parse(xmlResponse).getroot()
-        self.wcs = WCS(capabilities)
+        self.wcs = WCS(capabilities,apikey)
 
         versions = self.wcs.getVersions()
 
@@ -289,7 +293,8 @@ class SimpleWCS:
 
 
     def describeCoverage(self, covId):
-        params = {"REQUEST": "DescribeCoverage", "SERVICE": "WCS", "VERSION": "2.0.1", "COVERAGEID": covId}
+        apikey = self.wcs.getApikey()
+        params = {"REQUEST": "DescribeCoverage", "SERVICE": "WCS", "VERSION": "2.0.1", "COVERAGEID": covId, "api-key": apikey}
         querystring = urllib.parse.urlencode(params)
 
         describeCoverageUrl = self.wcs.getDescribeCoverageUrl()
@@ -319,6 +324,7 @@ class SimpleWCS:
 
 
     def getCovQueryStr(self):
+        apikey = self.wcs.getApikey()
         version = self.dlg.lblVersion.text()
 
         covId = self.dlg.cbCoverage.currentText()
@@ -340,7 +346,7 @@ class SimpleWCS:
         mapcrs = self.dlg.cbCRS.currentText()
         format = self.dlg.cbFormat.currentText()
 
-        params = [('REQUEST', 'GetCoverage'), ('SERVICE', 'WCS'), ('VERSION', version), ('COVERAGEID', covId), ('OUTPUTCRS', outputcrs), ('SUBSETTINGCRS', mapcrs), ('FORMAT', format), ('SUBSET', subset0), ('SUBSET', subset1)]
+        params = [('REQUEST', 'GetCoverage'), ('SERVICE', 'WCS'), ('VERSION', version), ('COVERAGEID', covId), ('OUTPUTCRS', outputcrs), ('SUBSETTINGCRS', mapcrs), ('FORMAT', format), ('SUBSET', subset0), ('SUBSET', subset1),('api-key', apikey)]
 
         querystring = urllib.parse.urlencode(params)
 

@@ -14,7 +14,7 @@ import os.path, urllib, xml.etree.ElementTree
 class WCS:
 
 
-    def __init__(self, capabilities):
+    def __init__(self, capabilities,apikey):
         ows = '{http://www.opengis.net/ows/2.0}'
         wcs = '{http://www.opengis.net/wcs/2.0}'
         crs = '{http://www.opengis.net/wcs/crs/1.0}'
@@ -22,6 +22,8 @@ class WCS:
         xlink = '{http://www.w3.org/1999/xlink}'
 
         self.capabilities = capabilities
+
+        self.apikey = apikey
 
         self.describeCoverageUrl = self.capabilities.find(ows + 'OperationsMetadata/' + ows + 'Operation[@name="DescribeCoverage"]/' + ows + 'DCP/' + ows + 'HTTP/' + ows + 'Get').attrib[xlink + 'href']
 
@@ -61,6 +63,8 @@ class WCS:
         for coverage in contents.findall('.//' + wcs + 'CoverageSummary/' + wcs + 'CoverageId'):
             self.covIds.append(coverage.text)
 
+    def getApikey(self):
+        return self.apikey
 
     def getTitle(self):
         return self.title.text
